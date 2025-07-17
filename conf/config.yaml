@@ -1,0 +1,48 @@
+experiment:
+  name: "lrgd"
+  description: "Low-Rank Guided Diffusion"
+
+dataset:
+  name: "set14" # "set14", "bsd100", "urban100", "div2k", "flickr8k"
+  path: null
+  batch_size: 1
+
+transmitter:
+  cs_method: "pixel" # "pixel", "walsh", "jpeg"
+  sampling:
+    rate: 0.01 # 0.01, 0.04, 0.1, 0.25, 0.5. For jpeg, it is the quality factor / 100
+  clip_model: # semantic text
+    enable: true
+    enable_negative: false
+    model_name: "ViT-L-14/openai"
+    fast_mode: false
+  contour: # conditional control
+    enable: true
+    canny_threshold1: 100
+    canny_threshold2: 200
+
+channel:
+  channel_type: "awgn" # "awgn", "none"
+  snr: Null
+
+receiver:
+  method: "sd" # "sd", "bi", "walsh", "jpeg"
+  stable_diffusion:
+    enable: true
+    model_name: "sd1.5"
+    method: "lowrank" # "inpaint", our "lowrank"
+    num_inference_step: 20
+    use_lcm_lora: false # to speed up, but bad performance now
+    rank: null # fixed rank (int)
+    info_percent: null # instead of using rank. please set rank to null.
+    rank_percent: 0.5 # instead of using rank & info_percent. please set the 2 to null.
+    ortho_projection: true
+    smooth_transition: true
+
+wandb:
+  project: "lrgd"
+
+seed: 42
+num_images: 100 # Number of images to process. Set to -1 to process all images.
+use_wandb: false
+save_images: false
